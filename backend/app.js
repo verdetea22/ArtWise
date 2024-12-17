@@ -15,22 +15,26 @@ app.get('/', (req, res) => {
 
 app.post('/artworks', async (req, res) => {
     const { title, artist, medium, year, image_url } = req.body;
-    console.log("Received data:", { title, artist, medium, year, image_url });
+
+    // Input validation: check for missing fields
+    if (!title || !artist || !medium || !year || !image_url) {
+        return res.status(400).json({ error: 'All fields are required: title, artist, medium, year, image_url' });
+    }
 
     try {
+        // Insert data into the database
         const query = `
             INSERT INTO artworks (title, artist, medium, year, image_url)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING *;
         `;
         const values = [title, artist, medium, year, image_url];
-        console.log("Running query:", query, "with values:", values);
 
         const result = await pool.query(query, values);
-        res.json(result.rows[0]);
+        res.json(result.rows[0]); // Return the newly inserted row
     } catch (err) {
         console.error('Error inserting data:', err.message);
-        res.status(500).send('Error saving artwork');
+        res.status(500).send('Internal Server Error');
     }
 });
 
