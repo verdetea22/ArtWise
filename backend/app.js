@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
+const cors = require('cors');
+app.use(cors()); // Allow all origins
 
 // Middleware to parse JSON data
 app.use(express.json());
@@ -50,6 +52,45 @@ app.get('/artworks', async (req, res) => {
     }
 });
 
+const axios = require('axios');
+
+app.get('/api/met-art', async (req, res) => {
+    try {
+        console.log("Fetching object IDs...");
+        const { data: objects } = await axios.get('https://collectionapi.metmuseum.org/public/collection/v1/objects');
+
+        const objectIDs = objects.objectIDs.slice(0, 100); // Fetch first 100 IDs to increase chances
+        console.log("Fetched object IDs:", objectIDs);
+
+        // Fetch details for each object with a limit of 10 valid results
+        const artworks = [];
+        for (let id of objectIDs) {
+            try {
+                const { data: art } = await axios.get(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`);
+                if (art.primaryImageSmall && art.title) {
+                    artworks.push({
+                        objectID: art.objectID,
+                        title: art.title,
+                        artist: art.artistDisplayName || "Unknown",
+                        medium: art.medium,
+                        year: art.objectDate,
+                        image_url: art.primaryImageSmall
+                    });
+                }
+                if (artworks.length >= 10) break; // Stop after finding 10 valid artworks
+            } catch (innerErr) {
+                console.warn(`Failed to fetch object ${id}:`, innerErr.message);
+            }
+        }
+
+        console.log("Filtered artworks:", artworks);
+        res.json(artworks);
+    } catch (err) {
+        console.error('Error fetching art from MET API:', err.message);
+        res.status(500).send('Error fetching art data');
+    }
+});
+
 // Test database connection
 app.get('/test-db', async (req, res) => {
     try {
@@ -62,7 +103,7 @@ app.get('/test-db', async (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
