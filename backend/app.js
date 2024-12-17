@@ -2,18 +2,21 @@ const express = require('express');
 const pool = require('./utils/db');
 const dotenv = require('dotenv');
 dotenv.config();
-require('dotenv').config();
 
 const app = express();
+
+// Middleware to parse JSON data
+app.use(express.json());
 
 // Sample route
 app.get('/', (req, res) => {
     res.send('ArtWise Backend is Running');
 });
 
-
 app.post('/artworks', async (req, res) => {
     const { title, artist, medium, year, image_url } = req.body;
+    console.log("Received data:", { title, artist, medium, year, image_url });
+
     try {
         const query = `
             INSERT INTO artworks (title, artist, medium, year, image_url)
@@ -21,6 +24,8 @@ app.post('/artworks', async (req, res) => {
             RETURNING *;
         `;
         const values = [title, artist, medium, year, image_url];
+        console.log("Running query:", query, "with values:", values);
+
         const result = await pool.query(query, values);
         res.json(result.rows[0]);
     } catch (err) {
@@ -30,7 +35,7 @@ app.post('/artworks', async (req, res) => {
 });
 
 
-// Route to fetch all records from the "artworks" table
+// GET route to fetch all artworks
 app.get('/artworks', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM artworks');
@@ -41,15 +46,7 @@ app.get('/artworks', async (req, res) => {
     }
 });
 
-
-
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
-
-
+// Test database connection
 app.get('/test-db', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW()');
@@ -58,4 +55,10 @@ app.get('/test-db', async (req, res) => {
         console.error(err.message);
         res.status(500).send('Database Error');
     }
+});
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });
