@@ -1,70 +1,62 @@
-# Getting Started with Create React App
+# ArtWise
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+ArtWise is a simple and interactive web application that fetches artwork data from the MET Museum API, displays detailed information about various art pieces, and allows users to explore them. The goal of the project is to create an informative and engaging platform where users can view art from museums and, in the future, get personalized recommendations based on their preferences.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## General Idea
 
-### `npm start`
+This project integrates a public museum API (specifically the MET Museum API) to retrieve information about artworks like:
+- **Title**
+- **Artist**
+- **Medium**
+- **Year**
+- **Image**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The backend fetches and filters the art data, and the frontend displays it in a clean and responsive layout using React and Bootstrap. While the current version focuses on fetching and displaying art, future features will include user interactions like "favoriting" artworks and creating a recommendation system based on those choices.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## Technologies Used
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### **Backend**
+- **Node.js**: Used for setting up the server and handling API requests.
+- **Express**: A lightweight framework to create routes and serve the data.
+- **Axios**: For making HTTP requests to the MET Museum API.
+- **CORS**: Middleware to handle cross-origin requests.
+- **PostgreSQL**: A database for storing user data and potential favorites (not heavily used in the current version).
 
-### `npm run build`
+### **Frontend**
+- **React**: A JavaScript library for building the user interface.
+- **Axios**: For calling the backend API and retrieving the art data.
+- **Bootstrap**: Used for responsive styling and a clean layout.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## How It Works
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. **Backend**:
+   - Fetches the list of object IDs from the MET Museum API.
+   - Retrieves detailed artwork information for each ID (like title, artist, and image).
+   - Filters out artworks without images or titles.
+   - Serves this filtered list of artworks at a `/api/met-art` endpoint.
 
-### `npm run eject`
+2. **Frontend**:
+   - Fetches the data from the backend API (`/api/met-art`).
+   - Displays each artwork in a responsive grid with Bootstrap cards.
+   - Shows loading indicators while the data is being fetched.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Installation and Setup
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### **Prerequisites**
+- Node.js
+- PostgreSQL 
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### **Backend Setup**
+1. Clone the repository.
+2. Navigate to the `backend` folder and install dependencies:
+   ```bash
+   cd backend
+   npm install
