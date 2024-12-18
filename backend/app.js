@@ -56,18 +56,33 @@ const axios = require('axios');
 
 app.get('/api/met-art', async (req, res) => {
     try {
+        const limit = parseInt(req.query.limit) || 30; // Default to 20 artworks per page
+        const page = parseInt(req.query.page) || 1; // Default to page 1
+        const startYear = parseInt(req.query.startYear) || null; // Start year filter
+        const endYear = parseInt(req.query.endYear) || null; // End year filter
+        const medium = req.query.medium || null; // Medium filter
+
         console.log("Fetching object IDs...");
         const { data: objects } = await axios.get('https://collectionapi.metmuseum.org/public/collection/v1/objects');
 
-        const objectIDs = objects.objectIDs.slice(0, 100); // Fetch first 100 IDs to increase chances
-        console.log("Fetched object IDs:", objectIDs);
+        const objectIDs = objects.objectIDs.slice(0, 12000); // Pull more IDs to work with
 
-        // Fetch details for each object with a limit of 10 valid results
         const artworks = [];
-        for (let id of objectIDs) {
+        let index = 0;
+
+        // Fetch details and filter results
+        while (artworks.length < limit && index < objectIDs.length) {
             try {
-                const { data: art } = await axios.get(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`);
-                if (art.primaryImageSmall && art.title) {
+                const { data: art } = await axios.get(
+                    `https://collectionapi.metmuseum.org/public/collection/v1/objects/${objectIDs[index]}`
+                );
+
+                // Apply filters
+                const year = parseInt(art.objectDate);
+                const passesYearFilter = (!startYear || year >= startYear) && (!endYear || year <= endYear);
+                const passesMediumFilter = !medium || (art.medium && art.medium.toLowerCase().includes(medium.toLowerCase()));
+
+                if (art.primaryImageSmall && art.title && passesYearFilter && passesMediumFilter) {
                     artworks.push({
                         objectID: art.objectID,
                         title: art.title,
@@ -77,19 +92,21 @@ app.get('/api/met-art', async (req, res) => {
                         image_url: art.primaryImageSmall
                     });
                 }
-                if (artworks.length >= 10) break; // Stop after finding 10 valid artworks
-            } catch (innerErr) {
-                console.warn(`Failed to fetch object ${id}:`, innerErr.message);
+            } catch (err) {
+                console.warn(`Failed to fetch object ${objectIDs[index]}:`, err.message);
             }
+
+            index++;
         }
 
-        console.log("Filtered artworks:", artworks);
-        res.json(artworks);
+        console.log(`Returning ${artworks.length} artworks for page ${page}`);
+        res.json({ page, limit, artworks });
     } catch (err) {
         console.error('Error fetching art from MET API:', err.message);
         res.status(500).send('Error fetching art data');
     }
 });
+
 
 // Test database connection
 app.get('/test-db', async (req, res) => {
