@@ -8,7 +8,7 @@ const ArtworkCard = ({ art, onLike, liked }) => {
                     src={art.image_url}
                     alt={art.title}
                     className="card-img-top"
-                    style={{ objectFit: 'cover', height: '200px' }}
+                    style={{ objectFit: 'cover', height: '400px' }}
                 />
                 <div className="card-body">
                     <h5 className="card-title">{art.title}</h5>

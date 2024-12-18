@@ -8,8 +8,8 @@ const ArtworkList = ({ artworks, onLike, isLiked }) => {
                 <ArtworkCard
                     key={art.objectID}
                     art={art}
-                    onLike={onLike}
-                    liked={isLiked(art)}
+                    onLike={onLike}     
+                    liked={isLiked(art)} 
                 />
             ))}
         </div>
