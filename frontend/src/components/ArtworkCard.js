@@ -1,9 +1,9 @@
 import React from 'react';
 
-const ArtworkCard = ({ art }) => {
+const ArtworkCard = ({ art, onLike, liked }) => {
     return (
         <div className="col-md-4 mb-4">
-            <div className="card h-200 shadow-sm">
+            <div className="card h-100 shadow-sm">
                 <img
                     src={art.image_url}
                     alt={art.title}
@@ -17,6 +17,12 @@ const ArtworkCard = ({ art }) => {
                         <strong>Medium:</strong> {art.medium} <br />
                         <strong>Year:</strong> {art.year}
                     </p>
+                    <button
+                        className={`btn ${liked ? 'btn-danger' : 'btn-outline-danger'}`}
+                        onClick={() => onLike(art)}
+                    >
+                        {liked ? 'Unlike ❤️' : 'Like 🤍'}
+                    </button>
                 </div>
             </div>
         </div>
